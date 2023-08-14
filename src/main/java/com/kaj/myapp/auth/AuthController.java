@@ -80,10 +80,11 @@ public class AuthController {
         if(!profile.isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-        String token = jwt.createToken(u.getId(), u.getNickname());
+        String token = jwt.createToken(u.getId(), u.getUserid(), u.getNickname());
         System.out.println(token);
 
         Cookie cookie = new Cookie("token", token);
+        cookie.setPath("/");
         cookie.setMaxAge((int)(jwt.TOKEN_TIMEOUT/1000));
         cookie.setDomain("localhost");
 

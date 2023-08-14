@@ -1,5 +1,7 @@
 package com.kaj.myapp.post;
 
+import com.kaj.myapp.auth.Auth;
+import com.kaj.myapp.auth.AuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,11 +49,12 @@ public class PostController {
 
 
 
+    @Auth
     @PostMapping
-    public ResponseEntity addPost(@RequestBody Post post){
+    public ResponseEntity addPost(@RequestBody Post post, @RequestAttribute AuthUser authUser){
 
         System.out.println(post);
-//        System.out.println(user);
+        System.out.println(authUser);
 
         if(post.getTitle() == null || post.getTitle().isEmpty() || post.getContent() == null || post.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

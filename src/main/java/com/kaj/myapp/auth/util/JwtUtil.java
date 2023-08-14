@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.auth.entity.User;
 import com.kaj.myapp.auth.entity.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class JwtUtil {
     public final long TOKEN_TIMEOUT = 1000 * 60 * 60 * 24 * 7;
 
     //JWT토큰 생성
-    public String createToken(Long id, String nickname){
+    public String createToken(Long id, String userid, String nickname){
         Date now = new Date();
 
         Date expire = new Date(now.getTime()+TOKEN_TIMEOUT);
@@ -30,13 +31,14 @@ public class JwtUtil {
 
         return JWT.create()
                 .withSubject(id.toString())
+                .withClaim("userid", userid)
                 .withClaim("nickname", nickname)
                 .withIssuedAt(now)
                 .withExpiresAt(expire)
                 .sign(algorithm);
     }
 
-    public User validateToken(String token){
+    public AuthUser validateToken(String token){
         System.out.println(token);
         //검증 객체
         Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -44,11 +46,12 @@ public class JwtUtil {
 
         try{
             DecodedJWT decodedJWT = verifier.verify(token);
+            long id = Long.valueOf(decodedJWT.getSubject());
             String userId = decodedJWT.getClaim("userId").asString();
             String nickname = decodedJWT.getClaim("nickname").asString();
-            User user = User.builder().userid(userId).nickname(nickname).build();
-            System.out.println(user);
-            return user;
+            AuthUser authUser = AuthUser.builder().id(id).userid(userId).nickname(nickname).build();
+            System.out.println(authUser);
+            return authUser;
 //            Optional<User> profileUser = useRepo.findByUserid(userId);
 //            System.out.println(profileUser);
 //            if(!(profileUser.isEmpty()) && user.getProfile() == profileUser.get().getProfile()){
