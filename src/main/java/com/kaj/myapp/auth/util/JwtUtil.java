@@ -57,4 +57,18 @@ public class JwtUtil {
         }
     }
 
+    public String expireToken(String token){
+        Date expire = new Date(System.currentTimeMillis());
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        String subject = decodedJWT.getSubject();
+
+        String renewedToken = JWT.create()
+                .withSubject(subject)
+                .withExpiresAt(expire)
+                .sign(algorithm);
+        return renewedToken;
+    }
+
 }

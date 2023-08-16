@@ -2,6 +2,8 @@ package com.kaj.myapp.post;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
+import com.kaj.myapp.auth.entity.Profile;
+import com.kaj.myapp.auth.entity.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,8 @@ public class PostController {
 
     @Autowired
     PostRepository repo;
+    @Autowired
+    ProfileRepository proRepo;
 
     @GetMapping
     public List<Post> getPostList() {
@@ -56,39 +60,41 @@ public class PostController {
         System.out.println(post);
         System.out.println(authUser);
 
+
         if(post.getTitle() == null || post.getTitle().isEmpty() || post.getContent() == null || post.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         post.setCreatedTime(new Date().getTime());
         post.setNickname(authUser.getNickname());
+        Optional<List<Profile>> profileList =  proRepo.findByUser_Id(authUser.getId());
+        if(!profileList.isPresent()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        for (int i = 0; i < profileList.get().size(); i++) {
+            if(profileList.get().get(i).getPetname() == post.getPetname()) {
+                post.setProfile(profileList.get().get(i));
+            }
+        }
+
         Post savedPost = repo.save(post);
 
         if(savedPost != null){
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
-//        List<Profile> profile = user.getProfile();
-//        for(int i = 0; i < profile.size(); i++){
-//            if(post.getPetname().equals(profile.get(i).getPetname())){
-//                Post savedPost = repo.save(post);
-//                if(savedPost != null){
-//
-//                    return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
-//                }
-//
-//            }
-//        }
-
 
         return ResponseEntity.ok().build();
     }
-
+    @Auth
     @DeleteMapping(value = "/{no}")
-    public ResponseEntity removePost(@PathVariable long no){
+    public ResponseEntity removePost(@PathVariable long no, @RequestAttribute AuthUser authUser){
         System.out.println(no);
 
         Optional<Post> post = repo.findPostByNo(no);
-
+        Optional<Post> authUserPost = repo.findPostByNo(authUser.getId());
+        if(post != authUserPost){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         if(!post.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -99,12 +105,13 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @Auth
     @PutMapping(value = "/{no}")
-    public ResponseEntity modifyPost(@PathVariable long no, @RequestBody PostModifyRequest post){
+    public ResponseEntity modifyPost(@PathVariable long no, @RequestBody PostModifyRequest post, @RequestAttribute AuthUser authUser){
         System.out.println(no);
         System.out.println(post);
 
-        Optional<Post> findedPost = repo.findById(no);
+        Optional<Post> findedPost = repo.findById(authUser.getId());
         if(!findedPost.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

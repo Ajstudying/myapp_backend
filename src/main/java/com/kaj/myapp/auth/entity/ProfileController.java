@@ -1,12 +1,13 @@
 package com.kaj.myapp.auth.entity;
 
+import com.kaj.myapp.auth.Auth;
+import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.post.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -15,19 +16,45 @@ import java.util.*;
 public class ProfileController {
     @Autowired
     ProfileRepository proRepo;
+    @Auth
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getProfileList() {
-        List<Profile> lists = proRepo.findProfileSortByid();
+    public ResponseEntity<Map<String, Object>> getProfileList(@RequestAttribute AuthUser authUser) {
+        System.out.println(authUser);
+        Optional<List<Profile>> lists = proRepo.findByUser_Id(authUser.getId());
+        if(!lists.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         Map<String, Object> map = new HashMap<>();
-        List<List<String>> pets = new ArrayList<>();
-        for(Profile profile : lists){
-            List<String> pet = new ArrayList<>();
+        List<List<Object>> pets = new ArrayList<>();
+        for(Profile profile : lists.get()){
+            List<Object> pet = new ArrayList<>();
+            pet.add(profile.getUser().getUserid());
+            pet.add(profile.getUser().getNickname());
             pet.add(profile.getPetname());
             pet.add(profile.getSpecies());
+            pet.add(profile.getId());
             pets.add(pet);
         }
         map.put("data", pets);
         return ResponseEntity.ok().body(map);
+    }
+    @Auth
+    @PutMapping(value = "/{no}")
+    public ResponseEntity modifyProfile(@PathVariable long no, @RequestBody ProfileModifyRequest profile, @RequestAttribute AuthUser authUser){
+        Optional<Profile> findPro = proRepo.findById(no);
+        if(!findPro.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Profile toModifyProfile = findPro.get();
+        if(profile.getPetname() != null && !profile.getPetname().isEmpty()){
+            toModifyProfile.setPetname(profile.getPetname());
+        }
+        if(profile.getSpecies() != null && !profile.getSpecies().isEmpty()){
+            toModifyProfile.setSpecies(profile.getSpecies());
+        }
+        proRepo.save(toModifyProfile);
+
+        return ResponseEntity.ok().build();
     }
 
 }

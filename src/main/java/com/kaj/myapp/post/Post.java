@@ -1,5 +1,8 @@
 package com.kaj.myapp.post;
 
+import com.kaj.myapp.auth.entity.Profile;
+import com.kaj.myapp.auth.entity.ProfileModifyRequest;
+import com.kaj.myapp.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +25,9 @@ public class Post {
     private String image;
     private long createdTime;
     private String petname;
+
+    @ManyToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
 
 }
