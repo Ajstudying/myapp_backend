@@ -23,6 +23,5 @@ public class User {
     @Column(length = 500)
     private String secret;
     private String nickname;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Profile> profile;
+
 }

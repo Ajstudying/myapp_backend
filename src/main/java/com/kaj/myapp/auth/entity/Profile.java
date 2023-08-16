@@ -20,7 +20,7 @@ public class Profile {
     private String species;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
 //    public String getUserNickname() {

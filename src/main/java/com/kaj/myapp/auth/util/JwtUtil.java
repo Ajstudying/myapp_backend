@@ -49,15 +49,8 @@ public class JwtUtil {
             long id = Long.valueOf(decodedJWT.getSubject());
             String userId = decodedJWT.getClaim("userId").asString();
             String nickname = decodedJWT.getClaim("nickname").asString();
-            AuthUser authUser = AuthUser.builder().id(id).userid(userId).nickname(nickname).build();
-            System.out.println(authUser);
-            return authUser;
-//            Optional<User> profileUser = useRepo.findByUserid(userId);
-//            System.out.println(profileUser);
-//            if(!(profileUser.isEmpty()) && user.getProfile() == profileUser.get().getProfile()){
-//                return user;
-//            }
-//            return null;
+
+            return AuthUser.builder().id(id).userid(userId).nickname(nickname).build();
 
         }catch (JWTVerificationException e){
             //토큰 검증 오류 상황

@@ -10,6 +10,10 @@ select * from profile;
 
 truncate table profile;
 
+truncate table post_comment;
+
+truncate table post;
+
 -- 외래키 체크 False
 set FOREIGN_KEY_CHECKS = 0;
 

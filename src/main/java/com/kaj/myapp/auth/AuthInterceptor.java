@@ -38,14 +38,12 @@ public class AuthInterceptor implements HandlerInterceptor {
                 response.setStatus(401);
                 return false;
             }
-            AuthUser authUser = jwt.validateToken(token.replace("Bearer ", ""));
-            System.out.println(authUser);
-            System.out.println("print authUser");
-            if(authUser == null){
+            AuthUser user = jwt.validateToken(token.replace("Bearer ", ""));
+            if(user == null){
                 response.setStatus(401);
                 return false;
             }
-            request.setAttribute("authUser", authUser);
+            request.setAttribute("authUser", user);
             return true;
 
         }
