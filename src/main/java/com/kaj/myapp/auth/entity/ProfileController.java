@@ -22,14 +22,10 @@ public class ProfileController {
         List<List<String>> pets = new ArrayList<>();
         for(Profile profile : lists){
             List<String> pet = new ArrayList<>();
-            pet.add(profile.getUser().getUserid());
-            pet.add(profile.getUser().getNickname());
             pet.add(profile.getPetname());
             pet.add(profile.getSpecies());
             pets.add(pet);
-            System.out.println(pet);
         }
-        System.out.println(pets);
         map.put("data", pets);
         return ResponseEntity.ok().body(map);
     }

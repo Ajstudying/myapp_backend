@@ -61,6 +61,7 @@ public class PostController {
         }
 
         post.setCreatedTime(new Date().getTime());
+        post.setNickname(authUser.getNickname());
         Post savedPost = repo.save(post);
 
         if(savedPost != null){

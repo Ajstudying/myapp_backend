@@ -1,6 +1,5 @@
 package com.kaj.myapp.auth;
 
-import com.kaj.myapp.auth.entity.User;
 import com.kaj.myapp.auth.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,9 +19,9 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception{
-        System.out.println(request);
-        System.out.println(response);
-        System.out.println(handler);
+//        System.out.println(request);
+//        System.out.println(response);
+//        System.out.println(handler);
         if(handler instanceof HandlerMethod){
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();

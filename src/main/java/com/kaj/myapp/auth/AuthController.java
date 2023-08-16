@@ -60,7 +60,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Auth
     @PostMapping(value = "/signin")
     public ResponseEntity signin(@RequestParam String userid, @RequestParam String password, HttpServletResponse res) {
         System.out.println(userid);
