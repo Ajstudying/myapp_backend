@@ -15,7 +15,4 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 //    @Query(value = "select * from profile order by id asc", nativeQuery = true)
 //    List<Profile> findProfileSortByid();
 
-
-    @Override
-    Optional<Profile> findById(Long aLong);
 }

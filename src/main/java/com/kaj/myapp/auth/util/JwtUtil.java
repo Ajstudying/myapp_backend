@@ -46,10 +46,10 @@ public class JwtUtil {
         try{
             DecodedJWT decodedJWT = verifier.verify(token);
             long id = Long.valueOf(decodedJWT.getSubject());
-            String userId = decodedJWT.getClaim("userId").asString();
+            String userid = decodedJWT.getClaim("userid").asString();
             String nickname = decodedJWT.getClaim("nickname").asString();
 
-            return AuthUser.builder().id(id).userid(userId).nickname(nickname).build();
+            return AuthUser.builder().id(id).userid(userid).nickname(nickname).build();
 
         }catch (JWTVerificationException e){
             //토큰 검증 오류 상황

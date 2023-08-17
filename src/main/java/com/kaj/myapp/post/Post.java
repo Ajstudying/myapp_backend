@@ -20,14 +20,16 @@ public class Post {
     private String title;
     @Column(nullable = false)
     private String content;
+    @Column(nullable = false)
     private String nickname;
     @Column(length = 1024 * 1024 * 20)
     private String image;
     private long createdTime;
+    @Column(nullable = false)
     private String petname;
 
     @ManyToOne
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

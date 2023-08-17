@@ -4,6 +4,8 @@ import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.auth.entity.Profile;
 import com.kaj.myapp.auth.entity.ProfileRepository;
+import com.kaj.myapp.auth.entity.User;
+import com.kaj.myapp.auth.entity.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,14 +25,17 @@ public class PostController {
     @Autowired
     PostRepository repo;
     @Autowired
-    ProfileRepository proRepo;
+    UserRepository userRepo;
 
-    @GetMapping
-    public List<Post> getPostList() {
-        List<Post> list = repo.findAll(Sort.by("no").ascending());
-        return list;
+    @GetMapping(value = "/{postNo}")
+    public ResponseEntity getPost(@PathVariable long postNo) {
+        System.out.println(postNo);
+        Optional<Post> post = repo.findPostByNo(postNo);
+        if(!post.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(post.get());
     }
-
     @GetMapping(value = "/paging")
     public Page<Post> getPostsPaging(@RequestParam int page, @RequestParam int size){
         System.out.println(page);
@@ -67,15 +72,11 @@ public class PostController {
 
         post.setCreatedTime(new Date().getTime());
         post.setNickname(authUser.getNickname());
-        Optional<List<Profile>> profileList =  proRepo.findByUser_Id(authUser.getId());
-        if(!profileList.isPresent()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        Optional<User> isverifyUser = userRepo.findByUserid(authUser.getUserid());
+        if(!isverifyUser.isPresent()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        for (int i = 0; i < profileList.get().size(); i++) {
-            if(profileList.get().get(i).getPetname() == post.getPetname()) {
-                post.setProfile(profileList.get().get(i));
-            }
-        }
+        post.setUser(isverifyUser.get());
 
         Post savedPost = repo.save(post);
 
@@ -90,14 +91,19 @@ public class PostController {
     public ResponseEntity removePost(@PathVariable long no, @RequestAttribute AuthUser authUser){
         System.out.println(no);
 
+        ResponseEntity modifyCheckResponse = isModifyPost(no, authUser); // isModifyPost 결과 받기
+
+        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
+            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
+            return modifyCheckResponse; // 그대로 반환
+        }
         Optional<Post> post = repo.findPostByNo(no);
-        Optional<Post> authUserPost = repo.findPostByNo(authUser.getId());
-        if(post != authUserPost){
+
+
+        if(!post.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        if(!post.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+
         if(post.get().getNo() != no){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -111,10 +117,17 @@ public class PostController {
         System.out.println(no);
         System.out.println(post);
 
-        Optional<Post> findedPost = repo.findById(authUser.getId());
+        ResponseEntity modifyCheckResponse = isModifyPost(no, authUser);
+
+        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
+
+            return modifyCheckResponse;
+        }
+        Optional<Post> findedPost = repo.findPostByNo(no);
         if(!findedPost.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
         Post toModifyPost = findedPost.get();
 
         if(post.getTitle() != null && !post.getTitle().isEmpty()){
@@ -126,10 +139,29 @@ public class PostController {
         if(post.getImage() != null && !post.getImage().isEmpty()){
             toModifyPost.setImage(post.getImage());
         }
-
         repo.save(toModifyPost);
-
         return ResponseEntity.ok().build();
+
+
+    }
+    @Auth
+    @PutMapping(value = "/verify/{no}")
+    public ResponseEntity isModifyPost (@PathVariable long no, @RequestAttribute AuthUser authUser){
+
+        System.out.println(no + "가능한가");
+
+        Optional<Post> findedPost = repo.findById(no);
+        if(!findedPost.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        System.out.println(findedPost.get().getUser().getUserid());
+        System.out.println(authUser.getUserid());
+
+        if(findedPost.get().getUser().getUserid().equals(authUser.getUserid())){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
 

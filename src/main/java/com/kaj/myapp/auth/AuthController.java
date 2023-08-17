@@ -99,11 +99,11 @@ public class AuthController {
 
     }
 
-//    @PutMapping("/logout")
+//    @DeleteMapping("/logout")
 //    public ResponseEntity<String> logout(@RequestParam("token") String token, HttpServletResponse res) {
 //        // 토큰을 무효화시키는 로직 수행
 //        // 예를 들어, 토큰을 블랙리스트에 추가하거나 DB에서 삭제
-//        String newToken = jwt.expireToken(token);
+//
 //        Cookie cookie = new Cookie("token", token);
 //        cookie.setPath("/");
 //        cookie.setMaxAge((int)(jwt.TOKEN_TIMEOUT/1000));
