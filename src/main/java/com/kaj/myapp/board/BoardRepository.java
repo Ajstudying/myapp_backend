@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface BoardRepository extends JpaRepository<Board, BoardId> {
+public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b order by b.no")
     Page<Board> findByOrderByNoAsc(Pageable pageable);
 

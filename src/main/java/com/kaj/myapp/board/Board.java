@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @Entity
-@IdClass(BoardId.class)
+
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long no;
-    @Id
+    @Column(nullable = false)
     private String nickname;
 
     @Column(nullable = false)
@@ -33,9 +33,5 @@ public class Board {
     private String petname;
     @Column(nullable = false)
     private String species;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
 }

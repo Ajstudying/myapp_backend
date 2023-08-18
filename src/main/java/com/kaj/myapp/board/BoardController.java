@@ -65,7 +65,7 @@ public class BoardController {
         if(board.getContent() == null || board.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(board.getPetname() == null || board.getPetname().isEmpty()){
+        if(board.getSpecies() == null || board.getSpecies().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -79,6 +79,26 @@ public class BoardController {
         }
         return ResponseEntity.ok().build();
     }
+    @Auth
+    @PutMapping(value = "/verify/{no}")
+    public ResponseEntity isModifyBoard (@PathVariable long no, @RequestAttribute AuthUser authUser){
+
+        System.out.println(no + "가능한가");
+
+        Optional<Board> findedBoard = boRepo.findById(no);
+        if(!findedBoard.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        System.out.println(findedBoard.get().getNickname());
+        System.out.println(authUser.getUserid());
+
+        if(findedBoard.get().getNickname().equals(authUser.getNickname())){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
 
     @Auth
     @DeleteMapping(value = "/{no}")
@@ -86,7 +106,14 @@ public class BoardController {
 
         System.out.println(no + "7");
 
-        Optional<Board> removeBoard = boRepo.findById(new BoardId(authUser.getId(), authUser.getNickname()));
+        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
+
+        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
+            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
+            return modifyCheckResponse; // 그대로 반환
+        }
+
+        Optional<Board> removeBoard = boRepo.findById(no);
         if(!removeBoard.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -94,7 +121,7 @@ public class BoardController {
         if(removeBoard.get().getNo() != no){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        boRepo.deleteById(new BoardId(authUser.getId(), authUser.getNickname()));
+        boRepo.deleteById(no);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -103,7 +130,14 @@ public class BoardController {
     public ResponseEntity modifyBoard(@PathVariable long no, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
         System.out.println(no + "8");
 
-        Optional<Board> findedBoard = boRepo.findById(new BoardId(authUser.getId(), authUser.getNickname()));
+        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
+
+        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
+            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
+            return modifyCheckResponse; // 그대로 반환
+        }
+
+        Optional<Board> findedBoard = boRepo.findById(no);
         if(!findedBoard.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
