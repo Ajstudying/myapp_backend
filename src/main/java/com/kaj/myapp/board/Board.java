@@ -1,4 +1,4 @@
-package com.kaj.myapp.post;
+package com.kaj.myapp.board;
 
 import com.kaj.myapp.auth.entity.User;
 import jakarta.persistence.*;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
-public class Post {
+public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +23,11 @@ public class Post {
     @Column(length = 1024 * 1024 * 20)
     private String image;
     private long createdTime;
+
     @Column(nullable = false)
     private String petname;
+    @Column(nullable = false)
+    private String species;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

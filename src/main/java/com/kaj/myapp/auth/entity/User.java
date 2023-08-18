@@ -22,6 +22,7 @@ public class User {
     private String userid;
     @Column(length = 500)
     private String secret;
+    @Column(unique = true)
     private String nickname;
 
 
