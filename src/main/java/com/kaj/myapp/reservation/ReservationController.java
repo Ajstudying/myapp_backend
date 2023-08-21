@@ -18,8 +18,8 @@ public class ReservationController {
     @Autowired
     ReservationRepository repo;
     @Auth
-    @GetMapping
-    public ResponseEntity getReservation (@RequestBody Reservation currentTime, @RequestAttribute AuthUser authUser){
+    @GetMapping(value="/{currentTime}")
+    public ResponseEntity getReservation (@PathVariable long currentTime, @RequestAttribute AuthUser authUser){
 
         System.out.println(currentTime);
         Optional<List<Reservation>> reserve = repo.findByNickname(authUser.getNickname());
@@ -27,10 +27,9 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         for (int i = 0; i < reserve.get().size(); i++) {
-            System.out.println(currentTime.getReservationTime());
             System.out.println(reserve.get().get(i).getReservationTime());
-            if(currentTime.getReservationTime() == reserve.get().get(i).getReservationTime()){
-                return ResponseEntity.status(HttpStatus.OK).body(reserve.get().get(i));
+            if(currentTime == reserve.get().get(i).getReservationTime()){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(reserve.get().get(i));
             }
         }
 
