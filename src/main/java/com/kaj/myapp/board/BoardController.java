@@ -102,7 +102,7 @@ public class BoardController {
 
     @Auth
     @DeleteMapping(value = "/{no}")
-    public ResponseEntity removeBoard(@PathVariable long no, @RequestBody String nickname, @RequestAttribute AuthUser authUser){
+    public ResponseEntity removeBoard(@PathVariable long no, @RequestParam String nickname, @RequestAttribute AuthUser authUser){
 
         System.out.println(no + "7");
 
@@ -125,7 +125,7 @@ public class BoardController {
 
     @Auth
     @PutMapping(value = "/{no}")
-    public ResponseEntity modifyBoard(@PathVariable long no, @RequestBody String nickname, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
+    public ResponseEntity modifyBoard(@PathVariable long no, @RequestParam String nickname, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
         System.out.println(no + "8");
 
 //        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
