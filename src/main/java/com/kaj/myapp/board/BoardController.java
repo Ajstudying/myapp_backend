@@ -102,16 +102,9 @@ public class BoardController {
 
     @Auth
     @DeleteMapping(value = "/{no}")
-    public ResponseEntity removeBoard(@PathVariable long no, @RequestAttribute AuthUser authUser){
+    public ResponseEntity removeBoard(@PathVariable long no, @RequestBody String nickname, @RequestAttribute AuthUser authUser){
 
         System.out.println(no + "7");
-
-        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
-
-        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
-            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
-            return modifyCheckResponse; // 그대로 반환
-        }
 
         Optional<Board> removeBoard = boRepo.findById(no);
         if(!removeBoard.isPresent()) {
@@ -121,21 +114,28 @@ public class BoardController {
         if(removeBoard.get().getNo() != no){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        boRepo.deleteById(no);
-        return ResponseEntity.status(HttpStatus.OK).build();
+
+        if(authUser.getNickname() == nickname){
+            boRepo.deleteById(no);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
     }
 
     @Auth
     @PutMapping(value = "/{no}")
-    public ResponseEntity modifyBoard(@PathVariable long no, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
+    public ResponseEntity modifyBoard(@PathVariable long no, @RequestBody String nickname, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
         System.out.println(no + "8");
 
-        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
+//        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
+//
+//        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
+//            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
+//            return modifyCheckResponse; // 그대로 반환
+//        }
 
-        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
-            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
-            return modifyCheckResponse; // 그대로 반환
-        }
+
 
         Optional<Board> findedBoard = boRepo.findById(no);
         if(!findedBoard.isPresent()){

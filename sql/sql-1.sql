@@ -2,6 +2,8 @@ use mypet;
 
 select * from post;
 
+select * from reservation;
+
 select * from board;
 
 select * from post_comment;
@@ -26,6 +28,5 @@ truncate table user;
 set FOREIGN_KEY_CHECKS = 1;
 
 select * from Post where no = 7;
-contactboardboard
 
 INSERT INTO post(no, content, created_time, image, nickname, title) value(1, "Lala", 2, "", "Lola","Lily");
