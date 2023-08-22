@@ -17,7 +17,7 @@ public class ReservationController {
     @Autowired
     ReservationRepository repo;
     @Auth
-    @GetMapping(value="/{currentTime}")
+    @GetMapping
     public ResponseEntity getReservation (@RequestAttribute AuthUser authUser){
 
         Optional<List<Reservation>> reserve = repo.findByNickname(authUser.getNickname());
@@ -64,7 +64,7 @@ public class ReservationController {
         if(!reserve.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        if(reserve.get().getNickname() == authUser.getNickname()){
+        if(reserve.get().getNickname().equals(authUser.getNickname())){
             repo.deleteById(no);
             return ResponseEntity.status(HttpStatus.OK).build();
         }else {
@@ -83,7 +83,7 @@ public class ReservationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Reservation modifyReserve = reservation.get();
-        if(modifyReserve.getNickname() == authUser.getNickname()){
+        if(modifyReserve.getNickname().equals(authUser.getNickname())){
             if(reserve.getPetname() != null && !reserve.getPetname().isEmpty()){
                 modifyReserve.setPetname(reserve.getPetname());
             }

@@ -16,6 +16,8 @@ import java.util.*;
 public class ProfileController {
     @Autowired
     ProfileRepository proRepo;
+    @Autowired
+    UserRepository repo;
     @Auth
     @GetMapping
     public ResponseEntity<Map<String, Object>> getProfileList(@RequestAttribute AuthUser authUser) {
@@ -37,6 +39,26 @@ public class ProfileController {
         }
         map.put("data", pets);
         return ResponseEntity.ok().body(map);
+    }
+    @Auth
+    @PostMapping
+    public ResponseEntity addProfile(@RequestBody Profile profile, @RequestAttribute AuthUser authUser){
+        System.out.println(profile);
+        //사용자 찾기
+        Optional<User> findedUser = repo.findById(authUser.getId());
+        if(!findedUser.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        User user = findedUser.get();
+        if(profile.getPetname() == null || profile.getPetname().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(profile.getSpecies() == null || profile.getSpecies().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        profile.setUser(user);
+        Profile savedProfile = proRepo.save(profile);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
     }
     @Auth
     @PutMapping(value = "/{no}")
