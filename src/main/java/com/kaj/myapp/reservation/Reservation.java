@@ -17,5 +17,6 @@ public class Reservation {
     private long no;
     private String nickname;
     private String petname;
+    private String content;
     private long reservationTime;
 }

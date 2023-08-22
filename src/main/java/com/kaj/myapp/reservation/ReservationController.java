@@ -8,8 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/reserve")
@@ -19,21 +18,18 @@ public class ReservationController {
     ReservationRepository repo;
     @Auth
     @GetMapping(value="/{currentTime}")
-    public ResponseEntity getReservation (@PathVariable long currentTime, @RequestAttribute AuthUser authUser){
+    public ResponseEntity getReservation (@RequestAttribute AuthUser authUser){
 
-        System.out.println(currentTime);
         Optional<List<Reservation>> reserve = repo.findByNickname(authUser.getNickname());
         if(!reserve.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        List<Reservation> list = new ArrayList<>();
         for (int i = 0; i < reserve.get().size(); i++) {
             System.out.println(reserve.get().get(i).getReservationTime());
-            if(currentTime == reserve.get().get(i).getReservationTime()){
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(reserve.get().get(i));
-            }
+            list.add(reserve.get().get(i));
         }
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(list);
     }
 
     @Auth
@@ -42,6 +38,9 @@ public class ReservationController {
         System.out.println(reservation);
 
         if(reservation.getPetname() == null || reservation.getPetname().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(reservation.getContent() == null || reservation.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         if(reservation.getReservationTime() <= 0){
@@ -87,6 +86,9 @@ public class ReservationController {
         if(modifyReserve.getNickname() == authUser.getNickname()){
             if(reserve.getPetname() != null && !reserve.getPetname().isEmpty()){
                 modifyReserve.setPetname(reserve.getPetname());
+            }
+            if(reserve.getContent() != null && !reserve.getContent().isEmpty()){
+                modifyReserve.setContent(reserve.getContent());
             }
             if(reserve.getReservationTime() > 0){
                 modifyReserve.setReservationTime(reserve.getReservationTime());

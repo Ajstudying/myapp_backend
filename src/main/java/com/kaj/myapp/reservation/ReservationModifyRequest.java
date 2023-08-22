@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 public class ReservationModifyRequest {
 
     private String petname;
+    private String content;
     private long reservationTime;
 }
