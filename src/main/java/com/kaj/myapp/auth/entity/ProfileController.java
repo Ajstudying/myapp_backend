@@ -78,5 +78,15 @@ public class ProfileController {
 
         return ResponseEntity.ok().build();
     }
+    @Auth
+    @DeleteMapping(value = "/{no}")
+    public ResponseEntity deleteProfile(@PathVariable long no, @RequestAttribute AuthUser authUser) {
+        Optional<Profile> findPro = proRepo.findById(no);
+        if(!findPro.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        proRepo.deleteById(no);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
 }
