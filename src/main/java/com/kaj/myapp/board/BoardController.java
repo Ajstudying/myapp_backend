@@ -22,14 +22,19 @@ public class BoardController {
     @Autowired
     BoardRepository boRepo;
 
+    @Auth
     @GetMapping(value = "/{boardNo}")
-    public ResponseEntity getBoard(@PathVariable long boardNo) {
-        System.out.println(boardNo);
-        Optional<Board> board = boRepo.findByNo(boardNo);
-        if(!board.isPresent()){
+    public ResponseEntity getBoard(@PathVariable long boardNo, @RequestAttribute AuthUser authUser) {
+
+        Optional<Board> findedBoard = boRepo.findById(boardNo);
+        if(!findedBoard.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(board.get());
+        if(findedBoard.get().getNickname().equals(authUser.getNickname())){
+            return ResponseEntity.status(HttpStatus.OK).body(findedBoard.get());
+        }else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(findedBoard.get());
+        }
     }
     @GetMapping(value = "/paging")
     public Page<Board> getBoardsPaging(@RequestParam int page, @RequestParam int size){
@@ -86,26 +91,6 @@ public class BoardController {
         }
         return ResponseEntity.ok().build();
     }
-    @Auth
-    @PutMapping(value = "/verify/{no}")
-    public ResponseEntity isModifyBoard (@PathVariable long no, @RequestAttribute AuthUser authUser){
-
-        System.out.println(no + "가능한가");
-
-        Optional<Board> findedBoard = boRepo.findById(no);
-        if(!findedBoard.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        System.out.println(findedBoard.get().getNickname());
-        System.out.println(authUser.getUserid());
-
-        if(findedBoard.get().getNickname().equals(authUser.getNickname())){
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-    }
-
 
     @Auth
     @DeleteMapping(value = "/{no}")
