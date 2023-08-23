@@ -53,6 +53,7 @@ public class BoardController {
             @RequestParam(required = false) String content,
             @RequestParam(required = false) String species) {
 
+        System.out.println("검색");
         if (nickname != null) {
             return boRepo.findByNicknameContains(nickname, PageRequest.of(page, size));
         } else if (title != null) {

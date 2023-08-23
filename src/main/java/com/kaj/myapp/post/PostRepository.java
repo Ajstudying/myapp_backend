@@ -11,7 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+    Page<Post> findByPetnameContainsOrNicknameContains(String petname, String nickname, Pageable pageable);
     Page<Post> findByPetnameContainsOrTitleContainsOrNicknameContains(String petname, String title, String nickname, Pageable pageable);
+
+    Page<Post> findByPetnameContainsOrTitleContains(String petname, String title, Pageable pageable);
     @Query(value = "select * from post where no = :no", nativeQuery = true)
     Optional<Post> findPostByNo(long no);
 

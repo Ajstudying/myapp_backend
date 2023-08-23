@@ -38,13 +38,11 @@ public class PostController {
     }
     @GetMapping(value = "/paging/search")
     public Page<Post> getPostsPagingSearch(@RequestParam int page, @RequestParam int size, @RequestParam String query){
-        System.out.println(page + "1");
-        System.out.println(size + "1");
         System.out.println(query + "1");
 
         Sort sort = Sort.by("no").descending();
         PageRequest pageRequest = PageRequest.of(page, size, sort);
-        return repo.findByPetnameContainsOrTitleContainsOrNicknameContains(query, query, query, pageRequest);
+        return repo.findByPetnameContainsOrNicknameContains(query, query, pageRequest);
     }
 
 
