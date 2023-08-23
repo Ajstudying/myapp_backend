@@ -21,9 +21,16 @@ public class BoardController {
 
     @Autowired
     BoardRepository boRepo;
-    @Autowired
-    UserRepository usRepo;
 
+    @GetMapping(value = "/{boardNo}")
+    public ResponseEntity getBoard(@PathVariable long boardNo) {
+        System.out.println(boardNo);
+        Optional<Board> board = boRepo.findByNo(boardNo);
+        if(!board.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(board.get());
+    }
     @GetMapping(value = "/paging")
     public Page<Board> getBoardsPaging(@RequestParam int page, @RequestParam int size){
         System.out.println(page + "1");

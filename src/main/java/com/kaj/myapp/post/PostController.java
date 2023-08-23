@@ -27,15 +27,6 @@ public class PostController {
     @Autowired
     UserRepository userRepo;
 
-    @GetMapping(value = "/{postNo}")
-    public ResponseEntity getPost(@PathVariable long postNo) {
-        System.out.println(postNo);
-        Optional<Post> post = repo.findPostByNo(postNo);
-        if(!post.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(post.get());
-    }
     @GetMapping(value = "/paging")
     public Page<Post> getPostsPaging(@RequestParam int page, @RequestParam int size){
         System.out.println(page);
