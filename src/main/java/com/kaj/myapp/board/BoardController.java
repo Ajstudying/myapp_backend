@@ -94,7 +94,7 @@ public class BoardController {
 
     @Auth
     @DeleteMapping(value = "/{no}")
-    public ResponseEntity removeBoard(@PathVariable long no, @RequestParam String nickname, @RequestAttribute AuthUser authUser){
+    public ResponseEntity removeBoard(@PathVariable long no, @RequestAttribute AuthUser authUser){
 
         System.out.println(no + "7");
 
@@ -103,15 +103,8 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if(removeBoard.get().getNo() != no){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        if(authUser.getNickname() == nickname){
-            boRepo.deleteById(no);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        boRepo.deleteById(no);
+        return ResponseEntity.status(HttpStatus.OK).build();
 
     }
 
