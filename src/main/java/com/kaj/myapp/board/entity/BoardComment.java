@@ -1,13 +1,13 @@
-package com.kaj.myapp.post.entity;
+package com.kaj.myapp.board.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Entity
+@Data
 @NoArgsConstructor
-public class PostComment {
+public class BoardComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -15,8 +15,8 @@ public class PostComment {
     private String content;
 
     @ManyToOne
-    private Post post;
+    private Board board;
 
     private long ownerId;
-    private String ownerName;
+    private String ownerName; //댓글을 다는 사람들의 닉네임
 }

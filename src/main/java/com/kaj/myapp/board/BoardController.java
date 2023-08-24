@@ -2,6 +2,9 @@ package com.kaj.myapp.board;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
+import com.kaj.myapp.board.entity.Board;
+import com.kaj.myapp.board.repository.BoardRepository;
+import com.kaj.myapp.board.request.BoardModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
