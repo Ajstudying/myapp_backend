@@ -129,6 +129,7 @@ public class BoardController {
         if(board.getPetname() != null && board.getPetname().isEmpty()){
             toModifyBoard.setPetname(board.getPetname());
         }
+        toModifyBoard.setImage(board.getImage());
         boRepo.save(toModifyBoard);
         return ResponseEntity.ok().build();
     }
