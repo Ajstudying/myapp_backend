@@ -1,4 +1,4 @@
-package com.kaj.myapp.post;
+package com.kaj.myapp.post.request;
 
 import jakarta.persistence.Column;
 import lombok.Data;

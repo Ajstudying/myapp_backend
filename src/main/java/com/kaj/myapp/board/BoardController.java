@@ -2,9 +2,6 @@ package com.kaj.myapp.board;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
-import com.kaj.myapp.auth.entity.UserRepository;
-import com.kaj.myapp.post.Post;
-import com.kaj.myapp.post.PostModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +38,7 @@ public class BoardController {
         System.out.println(page + "1");
         System.out.println(size + "1");
 
-        return boRepo.findByOrderByNoAsc(PageRequest.of(page, size));
+        return boRepo.findByOrderByNoDesc(PageRequest.of(page, size));
     }
 
     @GetMapping(value = "paging/search")
@@ -113,15 +110,6 @@ public class BoardController {
     @PutMapping(value = "/{no}")
     public ResponseEntity modifyBoard(@PathVariable long no, @RequestParam String nickname, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
         System.out.println(no + "8");
-
-//        ResponseEntity modifyCheckResponse = isModifyBoard(no, authUser); // isModifyPost 결과 받기
-//
-//        if (modifyCheckResponse.getStatusCode() != HttpStatus.OK) {
-//            // isModifyPost에서 Forbidden이거나 NotFound 반환 시
-//            return modifyCheckResponse; // 그대로 반환
-//        }
-
-
 
         Optional<Board> findedBoard = boRepo.findById(no);
         if(!findedBoard.isPresent()){

@@ -6,12 +6,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b order by b.no")
     Page<Board> findByOrderByNoAsc(Pageable pageable);
+
+    @Query("select b from Board b order by b.no DESC")
+    Page<Board> findByOrderByNoDesc(Pageable pageable);
+
 
     @Query("select b from Board b where b.nickname like concat('%', ?1, '%')")
     Page<Board> findByNicknameContains(String nickname, Pageable pageable);
@@ -26,15 +31,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findBySpeciesContains(String species, Pageable pageable);
 
     Optional<Board> findByNo(long no);
-
-
-
-
-
-
-
-
-
-
 
 }

@@ -2,10 +2,11 @@ package com.kaj.myapp.post;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
-import com.kaj.myapp.auth.entity.Profile;
-import com.kaj.myapp.auth.entity.ProfileRepository;
 import com.kaj.myapp.auth.entity.User;
 import com.kaj.myapp.auth.entity.UserRepository;
+import com.kaj.myapp.post.entity.Post;
+import com.kaj.myapp.post.repository.PostRepository;
+import com.kaj.myapp.post.request.PostModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @RestController

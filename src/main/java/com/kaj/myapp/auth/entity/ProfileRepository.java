@@ -1,8 +1,6 @@
 package com.kaj.myapp.auth.entity;
 
-import com.kaj.myapp.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

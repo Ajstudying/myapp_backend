@@ -2,7 +2,6 @@ package com.kaj.myapp.reservation;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
-import com.kaj.myapp.post.PostModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
