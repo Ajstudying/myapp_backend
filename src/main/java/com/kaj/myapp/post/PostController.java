@@ -52,7 +52,7 @@ public class PostController {
         System.out.println(authUser);
 
 
-        if(post.getTitle() == null || post.getTitle().isEmpty() || post.getContent() == null || post.getContent().isEmpty()){
+        if(post.getTitle() == null || post.getTitle().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -116,15 +116,13 @@ public class PostController {
 
         Post toModifyPost = findedPost.get();
 
-        if(post.getTitle() != null && !post.getTitle().isEmpty()){
+        if(post.getTitle() != null && !post.getTitle().isEmpty()) {
             toModifyPost.setTitle(post.getTitle());
-        }
-        if(post.getContent() != null && !post.getContent().isEmpty()){
-            toModifyPost.setContent(post.getContent());
         }
         if(post.getImage() != null && !post.getImage().isEmpty()){
             toModifyPost.setImage(post.getImage());
         }
+        toModifyPost.setContent(post.getContent());
         repo.save(toModifyPost);
         return ResponseEntity.ok().build();
 
