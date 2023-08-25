@@ -15,6 +15,9 @@ public interface BoardCommentRepository extends JpaRepository <BoardComment, Lon
     @Query("select b from BoardComment b where b.board.no = ?1 order by b.id")
     List<BoardComment> findByBoard_NoOrderByIdAsc(long no);
 
+    @Query("select b from BoardComment b where b.ownerName = ?1")
+    Optional<BoardComment> findByOwnerName(String ownerName);
+
 
 
 

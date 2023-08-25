@@ -3,6 +3,8 @@ package com.kaj.myapp.board;
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.board.entity.Board;
+import com.kaj.myapp.board.entity.BoardComment;
+import com.kaj.myapp.board.repository.BoardCommentRepository;
 import com.kaj.myapp.board.repository.BoardRepository;
 import com.kaj.myapp.board.request.BoardModifyRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +24,10 @@ public class BoardController {
 
     @Autowired
     BoardRepository boRepo;
+    @Autowired
+    private BoardCommentRepository commentRepo;
+    @Autowired
+    private BoardService service;
 
     @Auth
     @GetMapping(value = "/{boardNo}")
@@ -161,6 +168,45 @@ public class BoardController {
         toModifyBoard.setImage(board.getImage());
         boRepo.save(toModifyBoard);
         return ResponseEntity.ok().build();
+    }
+
+    @Auth
+    @GetMapping(value = "/{no}/comments")
+    public ResponseEntity getComment(@PathVariable long no, @RequestAttribute AuthUser authUser) {
+        System.out.println("출력");
+
+        List<BoardComment> list = commentRepo.findByBoard_NoOrderByIdAsc(no);
+        //해당 유저의 댓글 찾기
+        Optional<BoardComment> comment = commentRepo.findByOwnerName(authUser.getNickname());
+        if(comment.isPresent()){
+            return ResponseEntity.ok().body(list);
+        }else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(list);
+        }
+    }
+
+    @Auth
+    @PostMapping(value = "/{no}/comments")
+    public ResponseEntity createComment(@PathVariable long no, @RequestBody BoardComment comment, @RequestAttribute AuthUser authUser) {
+
+        Optional<Board> findedBoard = boRepo.findByNo(no);
+        if(!findedBoard.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(comment.getContent() == null || comment.getContent().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        comment.setBoard(findedBoard.get());
+        comment.setOwnerId(authUser.getId());
+        comment.setOwnerName(authUser.getNickname());
+
+        Board board = findedBoard.get();
+        board.setLastestComment(comment.getContent());
+        board.setCommentCnt(findedBoard.get().getCommentCnt() + 1);
+        // 트랜잭션 처리
+        service.createComment(board, comment);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
