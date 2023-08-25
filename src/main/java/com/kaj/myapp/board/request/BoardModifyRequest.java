@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardModifyRequest {
 
+    private String request;
     private String title;
     private String content;
     @Column(length = 1024 * 1024 * 20)

@@ -21,7 +21,8 @@ public class Board {
     @Column(nullable = false)
     private String nickname;
 
-//    private long request;
+    @Column(nullable = false)
+    private String request;
     @Column(nullable = false)
     private String title;
     @Column(nullable = false)

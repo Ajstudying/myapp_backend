@@ -44,6 +44,17 @@ public class BoardController {
         return boRepo.findByOrderByNoDesc(PageRequest.of(page, size));
     }
 
+    @GetMapping(value = "paging/request")
+    public Page<Board> getBoardsPagingRequest(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String request) {
+
+        System.out.println("옵션 검색");
+
+        return boRepo.findByRequestContains(request, PageRequest.of(page, size));
+    }
+
     @GetMapping(value = "paging/search")
     public Page<Board> getBoardsPagingSearch(
             @RequestParam int page,
@@ -72,6 +83,14 @@ public class BoardController {
     public ResponseEntity addBoard (@RequestBody Board board, @RequestAttribute AuthUser authUser){
         System.out.println(6);
 
+//        try{
+//           Long convertValue = Long.valueOf(board.getRequest());
+//        }catch (NumberFormatException e){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }
+        if(board.getRequest() == null || board.getRequest().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         if(board.getTitle() == null || board.getTitle().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -120,6 +139,15 @@ public class BoardController {
         }
         Board toModifyBoard = findedBoard.get();
 
+//        try{
+//            Long convertValue = Long.valueOf(board.getRequest());
+//            toModifyBoard.setRequest(convertValue);
+//        }catch (NumberFormatException e){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }
+        if(board.getRequest() != null && !board.getRequest().isEmpty()){
+            toModifyBoard.setRequest(board.getRequest());
+        }
         if(board.getTitle() != null && !board.getTitle().isEmpty()){
             toModifyBoard.setTitle(board.getTitle());
         }
