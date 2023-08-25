@@ -1,0 +1,107 @@
+package com.kaj.myapp.board;
+
+import com.kaj.myapp.auth.Auth;
+import com.kaj.myapp.auth.AuthUser;
+import com.kaj.myapp.board.entity.Board;
+import com.kaj.myapp.board.entity.BoardComment;
+import com.kaj.myapp.board.repository.BoardCommentRepository;
+import com.kaj.myapp.board.repository.BoardRepository;
+import com.kaj.myapp.board.request.CommentResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping(value = "/boards/{no}/comments")
+public class BoardCommentController {
+
+    @Autowired
+    BoardRepository boRepo;
+    @Autowired
+    private BoardCommentRepository commentRepo;
+    @Autowired
+    private BoardService service;
+
+
+//    @Auth
+//    @GetMapping
+//    public List<BoardComment> getCommentList(@PathVariable long no, @RequestAttribute AuthUser authUser) {
+//        System.out.println("출력");
+//
+//        List<BoardComment> list = commentRepo.findBoardCommentSortById(no);
+//        return list;
+//    }
+    @Auth
+    @GetMapping
+    public ResponseEntity getComment(@PathVariable long no, @RequestAttribute AuthUser authUser) {
+        System.out.println("출력");
+
+        List<BoardComment> list = commentRepo.findBoardCommentSortById(no);
+        //해당 유저의 댓글 찾기
+        Optional<List<BoardComment>> comment = commentRepo.findByBoardNo(no);
+        if(!comment.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<BoardComment> findedComment = new ArrayList<>();
+        List<BoardComment> otherComment = new ArrayList<>();
+        for (int i = 0; i < comment.get().size(); i++) {
+            if(comment.get().get(i).getOwnerName().equals(authUser.getNickname())){
+                findedComment.add(comment.get().get(i));
+                System.out.println(comment.get().get(i).getOwnerName());
+            }else {
+                otherComment.add(comment.get().get(i));
+            }
+        }
+        CommentResponse response = new CommentResponse();
+        response.setFindedComment(findedComment);
+        response.setOtherComment(otherComment);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Auth
+    @PostMapping
+    public ResponseEntity createComment(@PathVariable long no, @RequestBody BoardComment comment, @RequestAttribute AuthUser authUser) {
+
+        Optional<Board> findedBoard = boRepo.findByNo(no);
+        if(!findedBoard.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(comment.getContent() == null || comment.getContent().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        comment.setBoard(findedBoard.get());
+        comment.setOwnerId(authUser.getId());
+        comment.setOwnerName(authUser.getNickname());
+
+        Board board = findedBoard.get();
+        board.setLastestComment(comment.getContent());
+        board.setCommentCnt(findedBoard.get().getCommentCnt() + 1);
+        // 트랜잭션 처리
+        service.createComment(board, comment);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
+    }
+    @Auth
+    @DeleteMapping (value = "/{id}")
+    public ResponseEntity deleteComment(@PathVariable long no, @PathVariable long id, @RequestAttribute AuthUser authUser) {
+        Optional<Board> findedBoard = boRepo.findByNo(no);
+        if(!findedBoard.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Optional<BoardComment> comment = commentRepo.findById(id);
+        if(!comment.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(comment.get().getOwnerName().equals(authUser.getNickname())){
+            commentRepo.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+}
