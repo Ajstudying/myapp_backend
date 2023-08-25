@@ -175,9 +175,9 @@ public class BoardController {
     public ResponseEntity getComment(@PathVariable long no, @RequestAttribute AuthUser authUser) {
         System.out.println("출력");
 
-        List<BoardComment> list = commentRepo.findByBoard_NoOrderByIdAsc(no);
+        List<BoardComment> list = commentRepo.findBoardCommentSortById(no);
         //해당 유저의 댓글 찾기
-        Optional<BoardComment> comment = commentRepo.findByOwnerName(authUser.getNickname());
+        Optional<List<BoardComment>> comment = commentRepo.findByOwnerName(authUser.getNickname());
         if(comment.isPresent()){
             return ResponseEntity.ok().body(list);
         }else {
@@ -207,6 +207,23 @@ public class BoardController {
         service.createComment(board, comment);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+    @Auth
+    @DeleteMapping (value = "/{no}/comments/{id}")
+    public ResponseEntity deleteComment(@PathVariable long no, @PathVariable long id, @RequestAttribute AuthUser authUser) {
+        Optional<Board> findedBoard = boRepo.findByNo(no);
+        if(!findedBoard.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Optional<BoardComment> comment = commentRepo.findById(id);
+        if(!comment.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(comment.get().getOwnerName().equals(authUser.getNickname())){
+            commentRepo.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 }
