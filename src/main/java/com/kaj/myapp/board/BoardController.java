@@ -111,24 +111,25 @@ public class BoardController {
 
     @Auth
     @PutMapping(value = "/{no}")
-    public ResponseEntity modifyBoard(@PathVariable long no, @RequestParam String nickname, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
+    public ResponseEntity modifyBoard(@PathVariable long no, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
         System.out.println(no + "8");
 
-        Optional<Board> findedBoard = boRepo.findById(no);
+        Optional<Board> findedBoard = boRepo.findByNo(no);
         if(!findedBoard.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Board toModifyBoard = findedBoard.get();
 
-        if(board.getTitle() != null && board.getTitle().isEmpty()){
+        if(board.getTitle() != null && !board.getTitle().isEmpty()){
             toModifyBoard.setTitle(board.getTitle());
         }
-        if(board.getContent() != null && board.getContent().isEmpty()){
+        if(board.getContent() != null && !board.getContent().isEmpty()){
             toModifyBoard.setContent(board.getContent());
         }
-        if(board.getPetname() != null && board.getPetname().isEmpty()){
+        if(board.getPetname() != null && !board.getPetname().isEmpty()){
             toModifyBoard.setPetname(board.getPetname());
         }
+        toModifyBoard.setSpecies(board.getSpecies());
         toModifyBoard.setImage(board.getImage());
         boRepo.save(toModifyBoard);
         return ResponseEntity.ok().build();
