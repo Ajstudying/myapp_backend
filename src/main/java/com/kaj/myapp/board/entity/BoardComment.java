@@ -14,6 +14,8 @@ public class BoardComment {
 
     private String content;
 
+    private long createdTime;
+
     @ManyToOne
     private Board board;
 
