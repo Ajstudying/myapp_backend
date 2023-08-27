@@ -18,9 +18,7 @@ public interface BoardCommentRepository extends JpaRepository <BoardComment, Lon
 
     Optional<List<BoardComment>> findByBoardNo(long no);
 
-
-
-
+    Optional<BoardComment> findById(long id);
 
 
 
