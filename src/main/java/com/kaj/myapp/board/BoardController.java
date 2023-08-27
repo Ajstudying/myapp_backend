@@ -3,11 +3,9 @@ package com.kaj.myapp.board;
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.board.entity.Board;
-import com.kaj.myapp.board.entity.BoardComment;
 import com.kaj.myapp.board.repository.BoardCommentRepository;
 import com.kaj.myapp.board.repository.BoardRepository;
 import com.kaj.myapp.board.request.BoardModifyRequest;
-import com.kaj.myapp.board.request.CommentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -27,9 +23,9 @@ public class BoardController {
     @Autowired
     BoardRepository boRepo;
     @Autowired
-    private BoardCommentRepository commentRepo;
+    BoardCommentRepository commentRepo;
     @Autowired
-    private BoardService service;
+    BoardService service;
 
     @Auth
     @GetMapping(value = "/{boardNo}")

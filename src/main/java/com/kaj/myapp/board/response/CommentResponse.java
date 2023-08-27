@@ -1,4 +1,4 @@
-package com.kaj.myapp.board.request;
+package com.kaj.myapp.board.response;
 
 import com.kaj.myapp.board.entity.BoardComment;
 import lombok.Data;

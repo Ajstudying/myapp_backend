@@ -19,7 +19,7 @@ public class BoardComment {
     @ManyToOne
     private Board board;
 
-    private long ownerId; //게시판의 no
+    private long ownerId; //댓글 다는 사람의 아이디
     private String ownerName; //댓글을 다는 사람들의 닉네임
 
     //댓글 수

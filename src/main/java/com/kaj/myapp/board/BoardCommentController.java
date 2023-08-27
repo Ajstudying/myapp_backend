@@ -7,9 +7,10 @@ import com.kaj.myapp.board.entity.BoardComment;
 import com.kaj.myapp.board.entity.ReplyComment;
 import com.kaj.myapp.board.repository.BoardCommentRepository;
 import com.kaj.myapp.board.repository.BoardRepository;
-import com.kaj.myapp.board.request.BoardModifyRequest;
+import com.kaj.myapp.board.repository.ReplyCommentRepository;
 import com.kaj.myapp.board.request.CommentModifyRequest;
-import com.kaj.myapp.board.request.CommentResponse;
+import com.kaj.myapp.board.response.CommentResponse;
+import com.kaj.myapp.board.response.ReplyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,12 @@ public class BoardCommentController {
     @Autowired
     BoardRepository boRepo;
     @Autowired
-    private BoardCommentRepository commentRepo;
+    BoardCommentRepository commentRepo;
+
     @Autowired
-    private BoardService service;
+    ReplyCommentRepository replyRepo;
+    @Autowired
+    BoardService service;
 
 
 //    @Auth
@@ -44,7 +48,6 @@ public class BoardCommentController {
     public ResponseEntity getComment(@PathVariable long no, @RequestAttribute AuthUser authUser) {
         System.out.println("출력");
 
-        List<BoardComment> list = commentRepo.findBoardCommentSortById(no);
         //해당 유저의 댓글 찾기
         Optional<List<BoardComment>> comment = commentRepo.findByBoardNo(no);
         if(!comment.isPresent()){
@@ -132,6 +135,29 @@ public class BoardCommentController {
     }
 
     @Auth
+    @GetMapping("/{id}/reply")
+    public ResponseEntity getReplys(@PathVariable long id, @RequestAttribute AuthUser authUser) {
+
+        System.out.println("댓글조회");
+        Optional<List<ReplyComment>> reply = replyRepo.findByCommentId(id);
+        if(!reply.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<ReplyComment> findedReply = new ArrayList<>();
+        List<ReplyComment> otherReply = new ArrayList<>();
+        for (int i = 0; i < reply.get().size(); i++) {
+            if(reply.get().get(i).getOwnerName().equals(authUser.getNickname())){
+                findedReply.add(reply.get().get(i));
+            }else {
+                otherReply.add(reply.get().get(i));
+            }
+        }
+        ReplyResponse response = new ReplyResponse();
+        response.setFindedReply(findedReply);
+        response.setOtherReply(otherReply);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    @Auth
     @PostMapping("/{id}/reply")
     public ResponseEntity addReply(@PathVariable long id, @RequestBody ReplyComment reply, @RequestAttribute AuthUser authUser) {
 
@@ -142,6 +168,7 @@ public class BoardCommentController {
         if(reply.getContent() == null || reply.getContent().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        reply.setCommentId(id);
         reply.setOwnerId(authUser.getId());
         reply.setOwnerName(authUser.getNickname());
 
@@ -152,6 +179,28 @@ public class BoardCommentController {
         service.createReplyComment(comment, reply);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reply);
+    }
+
+    @Auth
+    @DeleteMapping(value = "/{id}/reply/{replyId}")
+    public ResponseEntity deleteComment(@PathVariable long no, @PathVariable long id, @PathVariable long replyId, @RequestAttribute AuthUser authUser) {
+        Optional<Board> findedBoard = boRepo.findByNo(no);
+        if(!findedBoard.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Optional<BoardComment> comment = commentRepo.findById(id);
+        if(!comment.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Optional<ReplyComment> reply = replyRepo.findById(replyId);
+        if(!reply.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if(reply.get().getOwnerName().equals(authUser.getNickname())){
+            replyRepo.deleteById(replyId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 }
