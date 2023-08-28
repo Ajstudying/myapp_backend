@@ -2,7 +2,12 @@ package com.kaj.myapp.auth.entity;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
+import com.kaj.myapp.board.BoardService;
+import com.kaj.myapp.board.repository.BoardRepository;
+import com.kaj.myapp.post.PostRepository;
+import com.kaj.myapp.post.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +21,10 @@ public class ProfileController {
     ProfileRepository proRepo;
     @Autowired
     UserRepository repo;
+    @Autowired
+    PostService postService;
+    @Autowired
+    BoardService boardService;
     @Auth
     @GetMapping
     public ResponseEntity<Map<String, Object>> getProfileList(@RequestAttribute AuthUser authUser) {
@@ -24,6 +33,8 @@ public class ProfileController {
         if(!lists.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        Long postsCount = postService.getPostCountByNickname(authUser.getNickname());
+        Long boardsCount = boardService.getBoardCountByNickname(authUser.getNickname());
         Map<String, Object> map = new HashMap<>();
         List<List<Object>> pets = new ArrayList<>();
         for(Profile profile : lists.get()){
@@ -32,6 +43,8 @@ public class ProfileController {
             pet.add(profile.getUser().getNickname());
             pet.add(profile.getPetname());
             pet.add(profile.getSpecies());
+            pet.add(postsCount);
+            pet.add(boardsCount);
             pet.add(profile.getId());
             pets.add(pet);
         }

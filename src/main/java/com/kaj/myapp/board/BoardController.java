@@ -6,9 +6,11 @@ import com.kaj.myapp.board.entity.Board;
 import com.kaj.myapp.board.repository.BoardCommentRepository;
 import com.kaj.myapp.board.repository.BoardRepository;
 import com.kaj.myapp.board.request.BoardModifyRequest;
+import com.kaj.myapp.post.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +24,7 @@ public class BoardController {
 
     @Autowired
     BoardRepository boRepo;
-    @Autowired
-    BoardCommentRepository commentRepo;
-    @Autowired
-    BoardService service;
+
 
     @Auth
     @GetMapping(value = "/{boardNo}")
@@ -40,6 +39,14 @@ public class BoardController {
         }else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(findedBoard.get());
         }
+    }
+    @Auth
+    @GetMapping(value = "/nickname/{nickname}")
+    public ResponseEntity<Page<Board>> getBoardsPagingNickname(@PathVariable String nickname, @RequestParam int page, @RequestParam int size, @RequestAttribute AuthUser authUser){
+        System.out.println("닉네임 조회");
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(boRepo.findByNicknameOrderByNoAsc(nickname, PageRequest.of(page, size)));
     }
     @GetMapping(value = "/paging")
     public Page<Board> getBoardsPaging(@RequestParam int page, @RequestParam int size){

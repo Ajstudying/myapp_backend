@@ -35,5 +35,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("select b from Board b where b.request like concat('%', ?1, '%')")
     Page<Board> findByRequestContains(String request, Pageable pageable);
 
+    long countByNickname(String nickname);
+
+    Page<Board> findByNicknameOrderByNoAsc(String nickname, Pageable pageable);
+
+
 
 }

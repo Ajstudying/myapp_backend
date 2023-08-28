@@ -17,6 +17,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = "select * from post where no = :no", nativeQuery = true)
     Optional<Post> findPostByNo(long no);
 
+    Page<Post> findByNicknameOrderByNoAsc(String nickname, Pageable pageable);
+
+
+
+    long countByNickname(String nickname);
+
 
 
 

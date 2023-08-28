@@ -32,4 +32,9 @@ public class BoardService {
         commentRepo.save(comment);
     }
 
+    public long getBoardCountByNickname(String nickname){
+        return boRepo.countByNickname(nickname);
+    }
+
+
 }

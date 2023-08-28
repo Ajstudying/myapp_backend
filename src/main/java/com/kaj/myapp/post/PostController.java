@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,16 @@ public class PostController {
         Sort sort = Sort.by("no").descending();
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         return repo.findByPetnameContainsOrNicknameContains(query, query, pageRequest);
+    }
+    @Auth
+    @GetMapping(value = "/{nickname}")
+    public ResponseEntity<Page<Post>> getPostsPagingNickname(@PathVariable String nickname, @RequestParam int page, @RequestParam int size, @RequestAttribute AuthUser authUser){
+        System.out.println("닉네임 조회");
+        CacheControl cacheControl = CacheControl.noCache(); // 캐시 무효화를 지시
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .cacheControl(cacheControl)
+                .body(repo.findByNicknameOrderByNoAsc(nickname, PageRequest.of(page, size)));
     }
 
 
