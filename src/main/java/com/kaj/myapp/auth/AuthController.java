@@ -68,17 +68,35 @@ public class AuthController {
 
         Optional<User> user = userRepo.findByUserid(userid);
         if(!user.isPresent()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(ServletUriComponentsBuilder
+                            .fromHttpUrl("http://localhost:5500/auth/login.html?err=Unauthorized")
+                            .build().toUri())
+                    .build();
         }
         boolean isVerified = hash.verifyHash(password, user.get().getSecret());
 
         if(!isVerified){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(ServletUriComponentsBuilder
+                            .fromHttpUrl("http://localhost:5500/auth/login.html?err=Unauthorized")
+                            .build().toUri())
+                    .build();
         }
         User u = user.get();
         Optional<List<Profile>> profile = profileRepo.findByUser_Id(u.getId());
         if(!profile.isPresent()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+//            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity
+                    .status(HttpStatus.FOUND)
+                    .location(ServletUriComponentsBuilder
+                            .fromHttpUrl("http://localhost:5500?err=Conflict")
+                            .build().toUri())
+                    .build();
         }
         String token = jwt.createToken(u.getId(), u.getUserid(), u.getNickname());
         System.out.println(token);
@@ -90,8 +108,14 @@ public class AuthController {
 
         res.addCookie(cookie);
 
+//        return ResponseEntity
+//                .status(302)
+//                .location(ServletUriComponentsBuilder
+//                        .fromHttpUrl("http://localhost:5500")
+//                        .build().toUri())
+//                .build();
         return ResponseEntity
-                .status(302)
+                .status(HttpStatus.FOUND)
                 .location(ServletUriComponentsBuilder
                         .fromHttpUrl("http://localhost:5500")
                         .build().toUri())
