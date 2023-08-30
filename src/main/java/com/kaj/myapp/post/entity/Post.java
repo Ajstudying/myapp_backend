@@ -1,9 +1,11 @@
-package com.kaj.myapp.post;
+package com.kaj.myapp.post.entity;
 
 import com.kaj.myapp.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,8 +27,11 @@ public class Post {
     @Column(nullable = false)
     private String petname;
 
+    private long likeCount;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 
 }

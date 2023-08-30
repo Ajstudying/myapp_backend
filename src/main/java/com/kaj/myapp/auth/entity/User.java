@@ -1,5 +1,6 @@
 package com.kaj.myapp.auth.entity;
 
+import com.kaj.myapp.post.entity.Likes;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,8 @@ public class User {
     private String secret;
     @Column(unique = true)
     private String nickname;
+
+    private boolean likes = false;
 
 
 }

@@ -4,6 +4,11 @@ import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.auth.entity.User;
 import com.kaj.myapp.auth.entity.UserRepository;
+import com.kaj.myapp.post.entity.Likes;
+import com.kaj.myapp.post.entity.Post;
+import com.kaj.myapp.post.repository.LikesRepository;
+import com.kaj.myapp.post.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,6 +30,10 @@ public class PostController {
     PostRepository repo;
     @Autowired
     UserRepository userRepo;
+    @Autowired
+    LikesRepository likeRepo;
+    @Autowired
+    PostService service;
 
     @GetMapping(value = "/paging")
     public Page<Post> getPostsPaging(@RequestParam int page, @RequestParam int size){
@@ -104,6 +114,11 @@ public class PostController {
         if(post.get().getNo() != no){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        List<Likes> likesList = likeRepo.findAllByPost_No(no);
+
+        for(Likes likes : likesList) {
+            likeRepo.delete(likes);
+        }
         repo.deleteById(no);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -159,7 +174,52 @@ public class PostController {
         }
     }
 
+    @Auth
+    @GetMapping(value = "/like")
+    public List<Likes> getLikes(@RequestAttribute AuthUser authUser){
+        List<Likes> likes = likeRepo.findByOwnerId(authUser.getId());
+        if(likes == null || likes.isEmpty()){
+            return null;
+        }
+        return likes;
+    }
 
+    @Auth
+    @PutMapping(value = "/{no}/{like}")
+    @Transactional
+    public ResponseEntity addLike(@PathVariable long no, @PathVariable boolean like, @RequestAttribute AuthUser authUser){
+
+        Optional<Post> post = repo.findPostByNo(no);
+        if (!post.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Likes likes = new Likes();
+
+        if (like) {
+            System.out.println("좋아요");
+            post.get().setLikeCount(post.get().getLikeCount() + 1);
+            likes.setOwnerId(authUser.getId());
+            likes.setLikes(true);
+            likes.setPost(post.get());
+            Optional<Likes> findedLike = likeRepo.findByPost_NoAndOwnerId(no, authUser.getId());
+            if(!findedLike.isPresent()){
+                service.createLikes(post.get(), likes);
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } else {
+            System.out.println("싫어요");
+            Optional<Likes> findedLike = likeRepo.findByPost_NoAndOwnerId(no, authUser.getId());
+            if(!findedLike.isPresent()){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            findedLike.get().setLikes(false);
+            post.get().setLikeCount(post.get().getLikeCount() - 1);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+
+    }
 
 
 }

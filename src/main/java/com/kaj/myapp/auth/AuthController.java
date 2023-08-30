@@ -122,6 +122,11 @@ public class AuthController {
                 .build();
 
     }
+    @Auth
+    @GetMapping(value = "/userinfo")
+    public AuthUser getAuthUser(@RequestAttribute AuthUser authUser){
+        return authUser;
+    }
 
 //    @DeleteMapping("/logout")
 //    public ResponseEntity<String> logout(@RequestParam("token") String token, HttpServletResponse res) {

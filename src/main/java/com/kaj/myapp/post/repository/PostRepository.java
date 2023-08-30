@@ -1,5 +1,6 @@
-package com.kaj.myapp.post;
+package com.kaj.myapp.post.repository;
 
+import com.kaj.myapp.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
