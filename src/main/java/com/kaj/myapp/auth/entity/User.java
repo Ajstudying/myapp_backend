@@ -26,7 +26,4 @@ public class User {
     @Column(unique = true)
     private String nickname;
 
-    private boolean likes = false;
-
-
 }

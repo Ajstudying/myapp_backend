@@ -124,8 +124,8 @@ public class AuthController {
     }
     @Auth
     @GetMapping(value = "/userinfo")
-    public AuthUser getAuthUser(@RequestAttribute AuthUser authUser){
-        return authUser;
+    public String getUserNickname(@RequestAttribute AuthUser authUser){
+        return authUser.getNickname();
     }
 
 //    @DeleteMapping("/logout")

@@ -19,9 +19,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     List<Likes> findAllByPost_No(@Param("no") Long no);
 
 
-
-
-
     @Query("select l from Likes l where l.post.no = ?1 and l.ownerId = ?2")
     Optional<Likes> findByPost_NoAndOwnerId(long no, long ownerId);
 

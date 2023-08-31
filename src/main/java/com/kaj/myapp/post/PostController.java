@@ -176,12 +176,12 @@ public class PostController {
 
     @Auth
     @GetMapping(value = "/like")
-    public List<Likes> getLikes(@RequestAttribute AuthUser authUser){
+    public ResponseEntity<List<Likes>> getLikes(@RequestAttribute AuthUser authUser){
         List<Likes> likes = likeRepo.findByOwnerId(authUser.getId());
         if(likes == null || likes.isEmpty()){
-            return null;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return likes;
+        return ResponseEntity.status(HttpStatus.FOUND).body(likes);
     }
 
     @Auth
@@ -210,10 +210,10 @@ public class PostController {
         } else {
             System.out.println("싫어요");
             Optional<Likes> findedLike = likeRepo.findByPost_NoAndOwnerId(no, authUser.getId());
-            if(!findedLike.isPresent()){
+            if(!findedLike.isPresent()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-            findedLike.get().setLikes(false);
+            likeRepo.delete(findedLike.get());
             post.get().setLikeCount(post.get().getLikeCount() - 1);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
