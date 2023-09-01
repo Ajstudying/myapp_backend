@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @Entity
@@ -21,7 +19,7 @@ public class Post {
     private String content;
     @Column(nullable = false)
     private String nickname;
-    @Column(length = 1024 * 1024 * 20)
+    @Column(nullable = false, length = 1024 * 1024 * 20)
     private String image;
     private long createdTime;
     @Column(nullable = false)

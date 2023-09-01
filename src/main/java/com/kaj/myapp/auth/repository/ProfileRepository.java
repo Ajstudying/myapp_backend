@@ -1,5 +1,6 @@
-package com.kaj.myapp.auth.entity;
+package com.kaj.myapp.auth.repository;
 
+import com.kaj.myapp.auth.entity.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

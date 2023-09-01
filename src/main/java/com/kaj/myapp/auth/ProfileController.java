@@ -1,9 +1,18 @@
-package com.kaj.myapp.auth.entity;
+package com.kaj.myapp.auth;
 
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
+import com.kaj.myapp.auth.entity.Profile;
+import com.kaj.myapp.auth.entity.User;
+import com.kaj.myapp.auth.repository.UserRepository;
+import com.kaj.myapp.auth.repository.ProfileRepository;
+import com.kaj.myapp.auth.request.ProfileModifyRequest;
 import com.kaj.myapp.board.BoardService;
 import com.kaj.myapp.post.PostService;
+import com.kaj.myapp.schedule.ScheduleRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@Tag(name="회원의 반려동물 정보 관리 처리 API")
 @RestController
 @RequestMapping(value = "/profile")
 public class ProfileController {
@@ -22,6 +32,10 @@ public class ProfileController {
     PostService postService;
     @Autowired
     BoardService boardService;
+    @Autowired
+    ScheduleRepository scheRepo;
+
+    @Operation(summary = "회원의 반려동물 관련 정보 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping
     public ResponseEntity<Map<String, Object>> getProfileList(@RequestAttribute AuthUser authUser) {
@@ -32,6 +46,7 @@ public class ProfileController {
         }
         Long postsCount = postService.getPostCountByNickname(authUser.getNickname());
         Long boardsCount = boardService.getBoardCountByNickname(authUser.getNickname());
+        Long scheduleCount = scheRepo.getScheduleCountByNickname(authUser.getNickname());
         Map<String, Object> map = new HashMap<>();
         List<List<Object>> pets = new ArrayList<>();
         for(Profile profile : lists.get()){
@@ -42,12 +57,14 @@ public class ProfileController {
             pet.add(profile.getSpecies());
             pet.add(postsCount);
             pet.add(boardsCount);
+            pet.add(scheduleCount);
             pet.add(profile.getId());
             pets.add(pet);
         }
         map.put("data", pets);
         return ResponseEntity.ok().body(map);
     }
+    @Operation(summary = "회원의 반려동물 관련 정보 추가", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PostMapping
     public ResponseEntity addProfile(@RequestBody Profile profile, @RequestAttribute AuthUser authUser){
@@ -68,6 +85,7 @@ public class ProfileController {
         Profile savedProfile = proRepo.save(profile);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProfile);
     }
+    @Operation(summary = "회원의 반려동물 관련 정보 수정", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PutMapping(value = "/{no}")
     public ResponseEntity modifyProfile(@PathVariable long no, @RequestBody ProfileModifyRequest profile, @RequestAttribute AuthUser authUser){
@@ -86,6 +104,7 @@ public class ProfileController {
 
         return ResponseEntity.ok().build();
     }
+    @Operation(summary = "회원의 반려동물 관련 정보 삭제", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @DeleteMapping(value = "/{no}")
     public ResponseEntity deleteProfile(@PathVariable long no, @RequestAttribute AuthUser authUser) {

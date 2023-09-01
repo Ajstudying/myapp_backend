@@ -1,11 +1,11 @@
-package com.kaj.myapp.reservation;
+package com.kaj.myapp.schedule;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ReservationModifyRequest {
+public class ScheduleModifyRequest {
 
     private String petname;
     private String content;

@@ -1,9 +1,10 @@
 package com.kaj.myapp.auth;
 
 import com.kaj.myapp.auth.entity.Profile;
-import com.kaj.myapp.auth.entity.ProfileRepository;
+import com.kaj.myapp.auth.repository.ProfileRepository;
 import com.kaj.myapp.auth.entity.User;
-import com.kaj.myapp.auth.entity.UserRepository;
+import com.kaj.myapp.auth.repository.UserRepository;
+import com.kaj.myapp.auth.request.SignUpRequest;
 import com.kaj.myapp.auth.util.HashUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

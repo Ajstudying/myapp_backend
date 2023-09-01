@@ -1,12 +1,15 @@
 package com.kaj.myapp.auth;
 
-import com.auth0.jwt.JWT;
 import com.kaj.myapp.auth.entity.Profile;
-import com.kaj.myapp.auth.entity.ProfileRepository;
+import com.kaj.myapp.auth.repository.ProfileRepository;
 import com.kaj.myapp.auth.entity.User;
-import com.kaj.myapp.auth.entity.UserRepository;
+import com.kaj.myapp.auth.repository.UserRepository;
+import com.kaj.myapp.auth.request.SignUpRequest;
 import com.kaj.myapp.auth.util.HashUtil;
 import com.kaj.myapp.auth.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name="로그인 관리 처리 API")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -33,6 +37,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwt;
 
+    @Operation(summary = "회원의 정보 추가(회원가입)")
     @PostMapping(value = "/signup")
     public ResponseEntity signUp(@RequestBody SignUpRequest req){
         System.out.println(req);
@@ -61,6 +66,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "회원의 정보 조회 및 인증 정보 추가(로그인)")
     @PostMapping(value = "/signin")
     public ResponseEntity signin(@RequestParam String userid, @RequestParam String password, HttpServletResponse res) {
         System.out.println(userid);
@@ -122,6 +128,7 @@ public class AuthController {
                 .build();
 
     }
+    @Operation(summary = "회원의 닉네임 정보 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping(value = "/userinfo")
     public String getUserNickname(@RequestAttribute AuthUser authUser){

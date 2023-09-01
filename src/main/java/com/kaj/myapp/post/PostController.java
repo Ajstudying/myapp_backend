@@ -3,11 +3,14 @@ package com.kaj.myapp.post;
 import com.kaj.myapp.auth.Auth;
 import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.auth.entity.User;
-import com.kaj.myapp.auth.entity.UserRepository;
+import com.kaj.myapp.auth.repository.UserRepository;
 import com.kaj.myapp.post.entity.Likes;
 import com.kaj.myapp.post.entity.Post;
 import com.kaj.myapp.post.repository.LikesRepository;
 import com.kaj.myapp.post.repository.PostRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
+@Tag(name="포스트 관리 처리 API")
 @RestController
 @RequestMapping(value = "/posts")
 public class PostController {
@@ -35,6 +38,7 @@ public class PostController {
     @Autowired
     PostService service;
 
+    @Operation(summary = "포스트 목록 페이징 조회")
     @GetMapping(value = "/paging")
     public Page<Post> getPostsPaging(@RequestParam int page, @RequestParam int size){
         System.out.println(page);
@@ -44,6 +48,7 @@ public class PostController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         return repo.findAll(pageRequest);
     }
+    @Operation(summary = "포스트 목록 검색어 페이징 조회")
     @GetMapping(value = "/paging/search")
     public Page<Post> getPostsPagingSearch(@RequestParam int page, @RequestParam int size, @RequestParam String query){
         System.out.println(query + "1");
@@ -52,6 +57,7 @@ public class PostController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         return repo.findByPetnameContainsOrNicknameContains(query, query, pageRequest);
     }
+    @Operation(summary = "마이페이지의 유저 본인의 포스트 목록 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping(value = "/{nickname}")
     public ResponseEntity<Page<Post>> getPostsPagingNickname(@PathVariable String nickname, @RequestParam int page, @RequestParam int size, @RequestAttribute AuthUser authUser){
@@ -65,6 +71,7 @@ public class PostController {
 
 
 
+    @Operation(summary = "포스트 추가", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PostMapping
     public ResponseEntity addPost(@RequestBody Post post, @RequestAttribute AuthUser authUser){
@@ -93,6 +100,7 @@ public class PostController {
 
         return ResponseEntity.ok().build();
     }
+    @Operation(summary = "포스트 삭제", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @DeleteMapping(value = "/{no}")
     public ResponseEntity removePost(@PathVariable long no, @RequestAttribute AuthUser authUser){
@@ -123,6 +131,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @Operation(summary = "포스트 수정", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PutMapping(value = "/{no}")
     public ResponseEntity modifyPost(@PathVariable long no, @RequestBody PostModifyRequest post, @RequestAttribute AuthUser authUser){
@@ -154,8 +163,9 @@ public class PostController {
 
 
     }
+    @Operation(summary = "포스트 권한 확인", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
-    @PutMapping(value = "/verify/{no}")
+    @GetMapping(value = "/verify/{no}")
     public ResponseEntity isModifyPost (@PathVariable long no, @RequestAttribute AuthUser authUser){
 
         System.out.println(no + "가능한가");
@@ -174,6 +184,7 @@ public class PostController {
         }
     }
 
+    @Operation(summary = "좋아요 목록 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping(value = "/like")
     public ResponseEntity<List<Likes>> getLikes(@RequestAttribute AuthUser authUser){
@@ -184,6 +195,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.FOUND).body(likes);
     }
 
+    @Operation(summary = "좋아요 추가/취소", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PutMapping(value = "/{no}/{like}")
     @Transactional

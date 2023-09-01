@@ -6,10 +6,12 @@ import com.kaj.myapp.board.entity.ReplyComment;
 import com.kaj.myapp.board.repository.BoardCommentRepository;
 import com.kaj.myapp.board.repository.BoardRepository;
 import com.kaj.myapp.board.repository.ReplyCommentRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Tag(name="게시판 트랜젝션 처리 서비스")
 @Service
 public class BoardService {
 

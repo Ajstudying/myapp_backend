@@ -1,6 +1,5 @@
 package com.kaj.myapp.post.entity;
 
-import com.kaj.myapp.auth.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

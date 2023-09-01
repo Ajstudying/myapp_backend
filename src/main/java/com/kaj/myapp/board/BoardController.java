@@ -5,6 +5,9 @@ import com.kaj.myapp.auth.AuthUser;
 import com.kaj.myapp.board.entity.Board;
 import com.kaj.myapp.board.repository.BoardRepository;
 import com.kaj.myapp.board.request.BoardModifyRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.Optional;
 
+@Tag(name="게시판 관리 처리 API")
 @RestController
 @RequestMapping(value = "/boards")
 public class BoardController {
@@ -23,6 +27,7 @@ public class BoardController {
     BoardRepository boRepo;
 
 
+    @Operation(summary = "게시글 상세 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping(value = "/{boardNo}")
     public ResponseEntity getBoard(@PathVariable long boardNo, @RequestAttribute AuthUser authUser) {
@@ -37,6 +42,7 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(findedBoard.get());
         }
     }
+    @Operation(summary = "마이페이지 유저 본인의 게시글 페이징 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping(value = "/nickname/{nickname}")
     public ResponseEntity<Page<Board>> getBoardsPagingNickname(@PathVariable String nickname, @RequestParam int page, @RequestParam int size, @RequestAttribute AuthUser authUser){
@@ -45,25 +51,33 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(boRepo.findByNicknameOrderByNoAsc(nickname, PageRequest.of(page, size)));
     }
+
+    @Operation(summary = "게시글 페이징 조회", security = { @SecurityRequirement(name = "bearer-key") })
+    @Auth
     @GetMapping(value = "/paging")
-    public Page<Board> getBoardsPaging(@RequestParam int page, @RequestParam int size){
+    public Page<Board> getBoardsPaging(@RequestParam int page, @RequestParam int size, @RequestAttribute AuthUser authUser){
         System.out.println(page + "1");
         System.out.println(size + "1");
 
         return boRepo.findByOrderByNoDesc(PageRequest.of(page, size));
     }
 
+
+    @Operation(summary = "게시글 문의/추천 페이징 조회", security = { @SecurityRequirement(name = "bearer-key") })
+    @Auth
     @GetMapping(value = "paging/request")
     public Page<Board> getBoardsPagingRequest(
             @RequestParam int page,
             @RequestParam int size,
-            @RequestParam String request) {
+            @RequestParam String request, @RequestAttribute AuthUser authUser) {
 
         System.out.println("옵션 검색");
 
         return boRepo.findByRequestContains(request, PageRequest.of(page, size));
     }
 
+    @Operation(summary = "게시글 검색 페이징 조회", security = { @SecurityRequirement(name = "bearer-key") })
+    @Auth
     @GetMapping(value = "paging/search")
     public Page<Board> getBoardsPagingSearch(
             @RequestParam int page,
@@ -71,7 +85,7 @@ public class BoardController {
             @RequestParam(required = false) String nickname,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String content,
-            @RequestParam(required = false) String species) {
+            @RequestParam(required = false) String species, @RequestAttribute AuthUser authUser) {
 
         System.out.println("검색");
         if (nickname != null) {
@@ -87,6 +101,7 @@ public class BoardController {
         }
     }
 
+    @Operation(summary = "게시글 추가", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PostMapping
     public ResponseEntity addBoard (@RequestBody Board board, @RequestAttribute AuthUser authUser){
@@ -121,6 +136,7 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "게시글 삭제", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @DeleteMapping(value = "/{no}")
     public ResponseEntity removeBoard(@PathVariable long no, @RequestAttribute AuthUser authUser){
@@ -131,12 +147,16 @@ public class BoardController {
         if(!removeBoard.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        if (!removeBoard.get().getNickname().equals(authUser.getNickname())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         boRepo.deleteById(no);
         return ResponseEntity.status(HttpStatus.OK).build();
 
     }
 
+    @Operation(summary = "게시글 수정", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PutMapping(value = "/{no}")
     public ResponseEntity modifyBoard(@PathVariable long no, @RequestBody BoardModifyRequest board, @RequestAttribute AuthUser authUser){
@@ -154,6 +174,9 @@ public class BoardController {
 //        }catch (NumberFormatException e){
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 //        }
+        if (!toModifyBoard.getNickname().equals(authUser.getNickname())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         if(board.getRequest() != null && !board.getRequest().isEmpty()){
             toModifyBoard.setRequest(board.getRequest());
         }

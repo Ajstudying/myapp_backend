@@ -11,6 +11,9 @@ import com.kaj.myapp.board.repository.ReplyCommentRepository;
 import com.kaj.myapp.board.request.CommentModifyRequest;
 import com.kaj.myapp.board.response.CommentResponse;
 import com.kaj.myapp.board.response.ReplyResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name="게시판 댓글 관리 처리 API")
 @RestController
 @RequestMapping(value = "/boards/{no}/comments")
 public class BoardCommentController {
@@ -43,6 +47,8 @@ public class BoardCommentController {
 //        List<BoardComment> list = commentRepo.findBoardCommentSortById(no);
 //        return list;
 //    }
+//
+    @Operation(summary = "댓글 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping
     public ResponseEntity getComment(@PathVariable long no, @RequestAttribute AuthUser authUser) {
@@ -69,6 +75,7 @@ public class BoardCommentController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "댓글 추가", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PostMapping
     public ResponseEntity createComment(@PathVariable long no, @RequestBody BoardComment comment, @RequestAttribute AuthUser authUser) {
@@ -92,6 +99,7 @@ public class BoardCommentController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(comment);
     }
+    @Operation(summary = "댓글 삭제", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @DeleteMapping(value = "/{id}")
     public ResponseEntity deleteComment(@PathVariable long no, @PathVariable long id, @RequestAttribute AuthUser authUser) {
@@ -110,6 +118,7 @@ public class BoardCommentController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
+    @Operation(summary = "댓글 수정", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PutMapping(value = "/{id}")
     public ResponseEntity modifyComment(@PathVariable long no, @PathVariable long id, @RequestBody CommentModifyRequest comment, @RequestAttribute AuthUser authUser){
@@ -134,6 +143,7 @@ public class BoardCommentController {
 
     }
 
+    @Operation(summary = "댓글의 답글 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping("/{id}/reply")
     public ResponseEntity getReplys(@PathVariable long id, @RequestAttribute AuthUser authUser) {
@@ -157,6 +167,7 @@ public class BoardCommentController {
         response.setOtherReply(otherReply);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+    @Operation(summary = "댓글에 답글 추가", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @PostMapping("/{id}/reply")
     public ResponseEntity addReply(@PathVariable long id, @RequestBody ReplyComment reply, @RequestAttribute AuthUser authUser) {
@@ -181,6 +192,7 @@ public class BoardCommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reply);
     }
 
+    @Operation(summary = "댓글의 답글 삭제", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @DeleteMapping(value = "/{id}/reply/{replyId}")
     public ResponseEntity deleteComment(@PathVariable long no, @PathVariable long id, @PathVariable long replyId, @RequestAttribute AuthUser authUser) {
