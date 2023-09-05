@@ -24,8 +24,8 @@ select * from schedule;
 
 
 
-
-
+truncate table schedule;
+truncate table likes;
 truncate table profile;
 truncate table board;
 truncate table board_comment;
@@ -53,7 +53,6 @@ CREATE TABLE post (
     image VARCHAR(52428800),
     created_time BIGINT,
     petname VARCHAR(255) NOT NULL,
-    likes TINYINT(1) DEFAULT 0,
     like_count BIGINT,
     user_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES user(id)

@@ -18,6 +18,5 @@ public class ReplyComment {
     private long createdTime;
 
     private long commentId; //원댓글의 id
-    private long ownerId; // 댓글 다는 사람의 id
-    private String ownerName; //댓글을 다는 사람들의 닉네임
+    private long ownerId; /* 댓글 다는 사람의 id */private String ownerName; //댓글을 다는 사람들의 닉네임
 }

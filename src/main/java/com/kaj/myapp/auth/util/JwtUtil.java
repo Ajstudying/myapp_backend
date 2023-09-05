@@ -13,8 +13,6 @@ import java.util.Date;
 
 public class JwtUtil {
     //임의의 서명 값
-    @Autowired
-    UserRepository useRepo;
     public String secret = "pet-secret";
 
     //초/분/시간/하루/일주일

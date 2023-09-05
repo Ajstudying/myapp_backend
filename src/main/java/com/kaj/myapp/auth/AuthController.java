@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Tag(name="로그인 관리 처리 API")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(value = "/auth", produces="text/plain;charset=UTF-8")
 public class AuthController {
 
     @Autowired

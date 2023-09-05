@@ -16,7 +16,9 @@ public class Likes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private boolean likes;
+    @Builder.Default
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean likes = false;
 
     private long ownerId;
 
