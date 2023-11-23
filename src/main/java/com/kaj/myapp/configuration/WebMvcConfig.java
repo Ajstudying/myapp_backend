@@ -20,7 +20,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:5500",
                         "http://192.168.100.36:5500",
+                        "https://192.168.100.36:5500",
                         "https://d1a39zs71kjyn9.cloudfront.net",
+                        "http://d1a39zs71kjyn9.cloudfront.net",
                         "http://ec2-15-164-111-91.ap-northeast-2.compute.amazonaws.com")
                 .allowedMethods("*");
 
