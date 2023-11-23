@@ -109,7 +109,7 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .location(ServletUriComponentsBuilder
-                            .fromHttpUrl(homeUrl + "?err=Conflict")
+                            .fromHttpUrl(loginUrl + "?err=Conflict")
                             .build().toUri())
                     .build();
         }
