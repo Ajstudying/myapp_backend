@@ -22,7 +22,7 @@ import java.util.*;
 
 @Tag(name="회원의 반려동물 정보 관리 처리 API")
 @RestController
-@RequestMapping(value = "/profile")
+@RequestMapping(value = "/api/profile")
 public class ProfileController {
     @Autowired
     ProfileRepository proRepo;

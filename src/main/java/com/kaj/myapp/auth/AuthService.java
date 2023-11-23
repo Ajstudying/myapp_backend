@@ -37,7 +37,7 @@ public class AuthService {
 
         User saveUser = userRepo.save(toSaveUser);
 
-        List<Profile> lists = req.getProfilelist();
+        List<Profile> lists = req.getProfileList();
         for(int i = 0; i < lists.size(); i++) {
             Profile toSaveProfile = Profile.builder()
                     .petname(lists.get(i).getPetname())

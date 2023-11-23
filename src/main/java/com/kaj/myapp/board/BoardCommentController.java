@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Tag(name="게시판 댓글 관리 처리 API")
 @RestController
-@RequestMapping(value = "/boards/{no}/comments")
+@RequestMapping(value = "/api/boards/{no}/comments")
 public class BoardCommentController {
 
     @Autowired

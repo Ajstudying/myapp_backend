@@ -14,7 +14,7 @@ import java.util.*;
 
 @Tag(name="일정 관리 처리 API")
 @RestController
-@RequestMapping(value = "/schedule")
+@RequestMapping(value = "/api/schedule")
 public class ScheduleController {
 
     @Autowired

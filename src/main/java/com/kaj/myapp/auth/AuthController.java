@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,7 @@ import java.util.Optional;
 
 @Tag(name="로그인 관리 처리 API")
 @RestController
-@RequestMapping(value = "/auth", produces="text/plain;charset=UTF-8")
+@RequestMapping(value = "/api/auth", produces="text/plain;charset=UTF-8")
 public class AuthController {
 
     @Autowired
@@ -36,6 +38,13 @@ public class AuthController {
     private HashUtil hash;
     @Autowired
     private JwtUtil jwt;
+
+    @Value("${app.cookie.domain}")
+    private String cookieDomain;
+    @Value("${app.login.url}")
+    private String loginUrl;
+    @Value("${app.home.url}")
+    private String homeUrl;
 
     @Operation(summary = "회원의 정보 추가(회원가입)")
     @PostMapping(value = "/signup")
@@ -51,7 +60,7 @@ public class AuthController {
         if(req.getNickname() == null || req.getNickname().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        List<Profile> lists = req.getProfilelist();
+        List<Profile> lists = req.getProfileList();
         System.out.println(lists);
         for(int i = 0; i < lists.size(); i++){
             if(lists.get(i).getPetname() == null || lists.get(i).getPetname().isEmpty()){
@@ -78,7 +87,7 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .location(ServletUriComponentsBuilder
-                            .fromHttpUrl("http://localhost:5500/auth/login.html?err=Unauthorized")
+                            .fromHttpUrl(loginUrl + "?err=Unauthorized")
                             .build().toUri())
                     .build();
         }
@@ -89,7 +98,7 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .location(ServletUriComponentsBuilder
-                            .fromHttpUrl("http://localhost:5500/auth/login.html?err=Unauthorized")
+                            .fromHttpUrl(loginUrl + "?err=Unauthorized")
                             .build().toUri())
                     .build();
         }
@@ -100,7 +109,7 @@ public class AuthController {
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .location(ServletUriComponentsBuilder
-                            .fromHttpUrl("http://localhost:5500?err=Conflict")
+                            .fromHttpUrl(homeUrl + "?err=Conflict")
                             .build().toUri())
                     .build();
         }
@@ -110,7 +119,7 @@ public class AuthController {
         Cookie cookie = new Cookie("token", token);
         cookie.setPath("/");
         cookie.setMaxAge((int)(jwt.TOKEN_TIMEOUT/1000));
-        cookie.setDomain("localhost");
+        cookie.setDomain(cookieDomain);
 
         res.addCookie(cookie);
 
@@ -123,7 +132,7 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(ServletUriComponentsBuilder
-                        .fromHttpUrl("http://localhost:5500")
+                        .fromHttpUrl(homeUrl)
                         .build().toUri())
                 .build();
 

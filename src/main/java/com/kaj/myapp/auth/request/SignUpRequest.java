@@ -12,6 +12,6 @@ public class SignUpRequest {
     private String userId;
     private String password;
     private String nickname;
-    private List<Profile> profilelist;
+    private List<Profile> profileList;
 
 }

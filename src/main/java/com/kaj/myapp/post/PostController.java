@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 @Tag(name="포스트 관리 처리 API")
 @RestController
-@RequestMapping(value = "/posts")
+@RequestMapping(value = "/api/posts")
 public class PostController {
 
     @Autowired
@@ -57,6 +57,7 @@ public class PostController {
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         return repo.findByPetnameContainsOrNicknameContains(query, query, pageRequest);
     }
+//    @Operation(summary = "프로젝트 id로 프로젝트 정보 가져오기", security = [SecurityRequirement(name = "bearer-key")])
     @Operation(summary = "마이페이지의 유저 본인의 포스트 목록 조회", security = { @SecurityRequirement(name = "bearer-key") })
     @Auth
     @GetMapping(value = "/{nickname}")

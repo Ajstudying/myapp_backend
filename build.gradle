@@ -45,7 +45,11 @@ dependencies {
 	//
 
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+	//코틀린 의존성추가↓
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
+
+	//swegger오류 안 나게 하는 의존성 추가
+//	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 }
 
 tasks.named('test') {

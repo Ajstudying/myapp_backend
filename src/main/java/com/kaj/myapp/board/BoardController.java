@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Tag(name="게시판 관리 처리 API")
 @RestController
-@RequestMapping(value = "/boards")
+@RequestMapping(value = "/api/boards")
 public class BoardController {
 
     @Autowired
