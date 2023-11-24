@@ -84,6 +84,7 @@ public class AuthController {
         Optional<User> user = userRepo.findByUserid(userid);
         if(!user.isPresent()){
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            System.out.println("해당 유저가 없음");
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .location(ServletUriComponentsBuilder
@@ -95,6 +96,7 @@ public class AuthController {
 
         if(!isVerified){
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            System.out.println("비밀 번호가 안 맞음");
             return ResponseEntity
                     .status(HttpStatus.FOUND)
                     .location(ServletUriComponentsBuilder
